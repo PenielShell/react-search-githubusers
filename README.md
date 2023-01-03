@@ -1,5 +1,5 @@
 # react-search-githubusers
-A webapp to Search and View GitHub users.
+A webapp to Search and View GitHub users. [Project Link](https://githubsearch-usersreact.netlify.app/)
 
 
 ## Styled Components
@@ -44,7 +44,7 @@ version used - "react-router-dom": "^5.2.0",
 ## Gihthub API
 
 - [Root Endpoint](https://api.github.com)
-- [Get User](https://api.github.com/users/wesbos)
+- [Get User](https://api.github.com/users/PenielShell)
 - [Repos](https://api.github.com/users/PenielShell/repos?per_page=100)
 - [Followers](https://api.github.com/users/PenielShell/followers)
 - [Rate Limit](https://api.github.com/rate_limit)
