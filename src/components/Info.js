@@ -40,8 +40,8 @@ const UserInfo = () => {
   ]
   return <section className='section'>
     <Wrapper className='section-center'>
-    {items.map(item => {
-      return <Item key={item.id} {...item}></Item>;
+    {items.map((item,index) => {
+      return <Item key={index} {...item}></Item>;
     })}
 
     </Wrapper>

@@ -17,25 +17,46 @@ const GithubProvider = ({children}) =>{
 
     //request loadinf
     const [requests, setRequests] = useState(0);
-    const [loading, setIsLoading]= useState(false);
+    const [isLoading, setIsLoading]= useState(false);
     //erro
     const [error, setError] = useState({show:false, msg: ""})
     
 
     const searchGithubUser = async(user) => {
-        const response = await (await axios(`${rootUrl}/users/${user}`)).
-        catch(err => console.log(err))
+        toggleError();
+        setIsLoading(true);
+        const response = await axios(`${rootUrl}/users/${user}`).catch(err => console.log(err))
         if(response){
-            setGithubUser(response.data)
-        }else {
+            setIsLoading(false);
+            setGithubUser(response.data);
+            const {login, followers_url} = response.data;
+          
+            await Promise.allSettled([
+                axios(`${rootUrl}/users/${login}/repos?per_page=100`).then(response => setRepos(response.data)),
+                axios(`${followers_url}?per_page=100`).then(response => setFollwers(response.data))
+            ]).then((results) =>{
+                const [repos, followers] = results;
+                const status = 'fulfilled';
+
+                if(repos.status === status){
+                    setRepos(repos.value.data)
+                }
+                
+                if(followers.status === status){
+                    setFollwers(followers.value.data)
+                }
+            }).catch(err => console.log(err))
+        } else {
             toggleError(true, 'there is no user that username');
         }
-    }
+        checkRequests();
+        setIsLoading(false);
+    };
     
     
     //check rate
     const checkRequests = () =>{
-        axios(`${rootUrl}/rate_limit`).then(({data}) =>{
+        axios(`${rootUrl}/rate_limit`).then(({data}) => {
             let {rate: {remaining}} = data;
             setRequests(remaining);
             if(remaining === 0){
@@ -48,8 +69,6 @@ const GithubProvider = ({children}) =>{
         setError({show,msg});
     }
     //error
-
-
     useEffect(() =>{
         checkRequests()
     },[])
@@ -60,7 +79,8 @@ const GithubProvider = ({children}) =>{
             followers,
             requests,
             error,
-            searchGithubUser
+            searchGithubUser,
+            isLoading
         }}>{children}</GithubContext.Provider>
     )
 }
